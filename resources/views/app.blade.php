@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <meta name="theme-color" content="#F5F0E8">
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
         <title inertia>{{ config('app.name', 'Angonku.id') }}</title>
 
