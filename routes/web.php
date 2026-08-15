@@ -267,8 +267,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         // Notifications
         Route::patch('/notifications/{id}/read', [DashboardController::class, 'markNotificationAsRead'])->name('notifications.read');
 
-        // AI Chatbot
-        Route::post('/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.chat');
+        // AI Chatbot (rate limit 15 req/min)
+        Route::post('/chatbot', [ChatbotController::class, 'chat'])
+            ->middleware('throttle:15,1')
+            ->name('chatbot.chat');
 
         // MODUL 1: B2B Enterprise SaaS Koperasi (License Protected)
         Route::middleware(['cooperative.license'])->group(function () {
@@ -279,17 +281,23 @@ Route::middleware(['auth', 'active'])->group(function () {
         // MODUL 2: B2B Input Marketplace (Pakan, DOC, OVK, Peralatan)
         Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace');
         Route::get('/marketplace/checkout', [MarketplaceController::class, 'checkout'])->name('marketplace.checkout');
-        Route::post('/marketplace/orders', [MarketplaceController::class, 'storeOrder'])->name('marketplace.order.store');
+        Route::post('/marketplace/orders', [MarketplaceController::class, 'storeOrder'])
+            ->middleware('throttle:12,1')
+            ->name('marketplace.order.store');
         Route::get('/distributor/orders', [DistributorOrderController::class, 'index'])->name('distributor.orders');
         Route::patch('/distributor/orders/{id}/status', [DistributorOrderController::class, 'updateStatus'])->name('distributor.orders.status');
 
         // MODUL 3: B2B Harvest Offtaking & RPA Portal (Withdrawal-Safe Certified)
         Route::get('/harvest/listings', [HarvestListingController::class, 'index'])->name('harvest.listings.index');
-        Route::post('/harvest/listings', [HarvestListingController::class, 'store'])->name('harvest.listings.store');
+        Route::post('/harvest/listings', [HarvestListingController::class, 'store'])
+            ->middleware('throttle:12,1')
+            ->name('harvest.listings.store');
         Route::delete('/harvest/listings/{id}', [HarvestListingController::class, 'destroy'])->name('harvest.listings.destroy');
 
         Route::get('/rpa/portal', [RpaPortalController::class, 'index'])->name('rpa.portal');
-        Route::post('/rpa/listings/{id}/purchase', [RpaPortalController::class, 'purchaseListing'])->name('rpa.purchase');
+        Route::post('/rpa/listings/{id}/purchase', [RpaPortalController::class, 'purchaseListing'])
+            ->middleware('throttle:12,1')
+            ->name('rpa.purchase');
     });
 });
 
