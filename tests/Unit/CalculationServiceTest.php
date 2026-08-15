@@ -133,3 +133,34 @@ test('condition = warning jika FCR > 1.6', function () {
 
     expect($result['condition'])->toBe('warning');
 });
+
+test('calculateFinancials untuk siklus dipanen -> kalkulasi benar', function () {
+    $cycle = (object) [
+        'status' => 'harvested',
+        'doc_count' => 1000,
+        'price_doc' => 7000,
+        'dailyRecords' => collect([
+            (object) ['feed_kg' => 1200],
+            (object) ['feed_kg' => 1200],
+        ]),
+        'harvestRecord' => (object) [
+            'total_weight_kg' => 1500,
+            'harvest_count' => 950,
+            'price_per_kg' => 22000,
+            'total_revenue' => 33000000,
+        ]
+    ];
+
+    $result = $this->calculationService->calculateFinancials($cycle);
+
+    expect($result['biaya_doc'])->toBe(7000000.0);
+    expect($result['biaya_pakan'])->toBe(20400000.0);
+    expect($result['total_pengeluaran'])->toBe(29900000.0);
+    expect($result['pemasukan'])->toBe(33000000.0);
+    expect($result['keuntungan'])->toBe(3100000.0);
+    expect(round($result['hpp_kg'], 2))->toBe(19933.33);
+    expect(round($result['hpp_ekor'], 2))->toBe(31473.68);
+    expect(round($result['roi'], 4))->toBe(10.3679);
+    expect($result['is_estimated'])->toBeFalse();
+});
+

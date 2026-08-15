@@ -30,6 +30,34 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+                                {user.role === 'koperasi_admin' && (
+                                    <NavLink
+                                        href={route('koperasi.dashboard')}
+                                        active={route().current('koperasi.*')}
+                                    >
+                                        🏢 Koperasi Binaan
+                                    </NavLink>
+                                )}
+                                <NavLink
+                                    href={route('marketplace')}
+                                    active={route().current('marketplace*')}
+                                >
+                                    🛒 Pasar Input B2B
+                                </NavLink>
+                                {(user.role === 'peternak' || !user.role) && (
+                                    <NavLink
+                                        href={route('harvest.listings.index')}
+                                        active={route().current('harvest.*')}
+                                    >
+                                        📦 Jual Panen
+                                    </NavLink>
+                                )}
+                                <NavLink
+                                    href={route('rpa.portal')}
+                                    active={route().current('rpa.*')}
+                                >
+                                    🍗 Bursa RPA
+                                </NavLink>
                             </div>
                         </div>
 
@@ -133,6 +161,34 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        {user.role === 'koperasi_admin' && (
+                            <ResponsiveNavLink
+                                href={route('koperasi.dashboard')}
+                                active={route().current('koperasi.*')}
+                            >
+                                🏢 Koperasi Binaan
+                            </ResponsiveNavLink>
+                        )}
+                        <ResponsiveNavLink
+                            href={route('marketplace')}
+                            active={route().current('marketplace*')}
+                        >
+                            🛒 Pasar Input B2B
+                        </ResponsiveNavLink>
+                        {(user.role === 'peternak' || !user.role) && (
+                            <ResponsiveNavLink
+                                href={route('harvest.listings.index')}
+                                active={route().current('harvest.*')}
+                            >
+                                📦 Jual Panen
+                            </ResponsiveNavLink>
+                        )}
+                        <ResponsiveNavLink
+                            href={route('rpa.portal')}
+                            active={route().current('rpa.*')}
+                        >
+                            🍗 Bursa RPA
                         </ResponsiveNavLink>
                     </div>
 

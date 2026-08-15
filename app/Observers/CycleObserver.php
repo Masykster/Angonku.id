@@ -12,6 +12,7 @@ class CycleObserver
      */
     public function created(Cycle $cycle): void
     {
-        app(TimelineService::class)->generateBroilerTimeline($cycle);
+        $cycle->loadMissing('coop.farm');
+        \App\Services\GoldenTimelineService::seedForCycle($cycle);
     }
 }

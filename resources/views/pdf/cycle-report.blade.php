@@ -258,6 +258,69 @@
         </div>
     @endif
 
+    <div class="section-title">Laporan Keuangan & Evaluasi Siklus</div>
+    <table class="info-table" style="margin-bottom: 20px; border: 1px solid #cbd5e1; background-color: #f8fafc;">
+        <tr>
+            <td style="width: 50%; vertical-align: top; padding: 10px; border-right: 1px solid #cbd5e1;">
+                <div style="font-weight: bold; margin-bottom: 8px; color: #2d6a4f; font-size: 11px;">Ringkasan Keuangan</div>
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">Pemasukan {{ $financials['is_estimated'] ? '(Estimasi)' : '(Realisasi)' }}</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; font-size: 10px;">Rp {{ number_format($financials['pemasukan'], 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">Total Pengeluaran</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; color: #e05a33; font-size: 10px;">Rp {{ number_format($financials['total_pengeluaran'], 0, ',', '.') }}</td>
+                    </tr>
+                    <tr style="border-top: 1px dashed #cbd5e1;">
+                        <td style="padding: 5px 0; font-weight: bold; color: #2d6a4f; font-size: 10px;">Keuntungan {{ $financials['is_estimated'] ? '(Estimasi)' : '(Realisasi)' }}</td>
+                        <td style="padding: 5px 0; text-align: right; font-weight: bold; color: {{ $financials['keuntungan'] >= 0 ? '#2e8b3d' : '#e05a33' }}; font-size: 10px;">
+                            Rp {{ number_format($financials['keuntungan'], 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">HPP per Kg</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; font-size: 10px;">Rp {{ number_format($financials['hpp_kg'], 0, ',', '.') }} / kg</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">HPP per Ekor</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; font-size: 10px;">Rp {{ number_format($financials['hpp_ekor'], 0, ',', '.') }} / ekor</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">ROI (Return on Investment)</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; color: {{ $financials['roi'] >= 0 ? '#2e8b3d' : '#e05a33' }}; font-size: 10px;">
+                            {{ number_format($financials['roi'], 2, ',', '.') }}%
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td style="width: 50%; vertical-align: top; padding: 10px;">
+                <div style="font-weight: bold; margin-bottom: 8px; color: #2d6a4f; font-size: 11px;">Rincian Biaya Pengeluaran</div>
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">Biaya DOC ({{ number_format($cycle->doc_count) }} ekor)</td>
+                        <td style="padding: 3px 0; text-align: right; font-size: 10px;">Rp {{ number_format($financials['biaya_doc'], 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">Biaya Pakan ({{ number_format($total_feed_kg, 1) }} kg)</td>
+                        <td style="padding: 3px 0; text-align: right; font-size: 10px;">Rp {{ number_format($financials['biaya_pakan'], 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">Biaya Obat & Vaksin (Est.)</td>
+                        <td style="padding: 3px 0; text-align: right; font-size: 10px;">Rp {{ number_format($financials['biaya_obat'], 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #6b7b6b; font-size: 10px;">Biaya Operasional (Est.)</td>
+                        <td style="padding: 3px 0; text-align: right; font-size: 10px;">Rp {{ number_format($financials['biaya_operasional'], 0, ',', '.') }}</td>
+                    </tr>
+                </table>
+                <div style="font-size: 8px; color: #64748b; margin-top: 10px; line-height: 1.2;">
+                    * Catatan: Penghitungan menggunakan asumsi harga pakan Rp {{ number_format($financials['feed_price_per_kg'], 0, ',', '.') }}/kg, obat/vaksin Rp {{ number_format($financials['med_cost_per_doc'], 0, ',', '.') }}/ekor, operasional Rp {{ number_format($financials['op_cost_per_doc'], 0, ',', '.') }}/ekor.
+                </div>
+            </td>
+        </tr>
+    </table>
+
     <div class="section-title">Riwayat Kesehatan & Obat-obatan</div>
     <table class="data-table">
         <thead>

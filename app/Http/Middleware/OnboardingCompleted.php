@@ -15,7 +15,12 @@ class OnboardingCompleted
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            $hasFarm = Auth::user()->farms()->exists();
+            $user = Auth::user();
+            if ($user->isKoperasiAdmin() || $user->isRpaBuyer()) {
+                return $next($request);
+            }
+
+            $hasFarm = $user->farms()->exists();
 
             if (!$hasFarm) {
                 // If user has no farm and isn't on onboarding/logout, redirect to onboarding

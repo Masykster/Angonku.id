@@ -186,7 +186,6 @@ export default function ChatbotModal({ isOpen, onClose }) {
                     <img
                         src="/images/Group 72.png"
                         alt="Angon AI"
-                        loading="lazy"
                         style={{
                             width: '100%',
                             height: '100%',

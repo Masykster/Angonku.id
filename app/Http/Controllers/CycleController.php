@@ -59,9 +59,6 @@ class CycleController extends Controller
         $this->authorize('update', $coop->farm);
 
         $cycle = Cycle::create($validated);
-        $cycle->load('coop.farm');
-
-        GoldenTimelineService::seedForCycle($cycle);
 
         return redirect()->route('dashboard');
     }

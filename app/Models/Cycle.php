@@ -55,4 +55,9 @@ class Cycle extends Model
     {
         return $this->hasOne(HarvestRecord::class);
     }
+
+    public function harvestListings()
+    {
+        return $this->hasMany(HarvestListing::class);
+    }
 }

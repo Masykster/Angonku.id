@@ -35,4 +35,9 @@ class Farm extends Model
     {
         return $this->hasMany(Coop::class);
     }
+
+    public function harvestListings()
+    {
+        return $this->hasMany(HarvestListing::class);
+    }
 }

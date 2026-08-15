@@ -6,6 +6,7 @@ use App\Models\Cycle;
 use App\Models\DailyRecord;
 use App\Services\WithdrawalService;
 use App\Services\PdfReportService;
+use App\Services\CalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -17,11 +18,16 @@ class ReportController extends Controller
 
     protected $withdrawalService;
     protected $pdfReportService;
+    protected $calculationService;
 
-    public function __construct(WithdrawalService $withdrawalService, PdfReportService $pdfReportService)
-    {
+    public function __construct(
+        WithdrawalService $withdrawalService,
+        PdfReportService $pdfReportService,
+        CalculationService $calculationService
+    ) {
         $this->withdrawalService = $withdrawalService;
         $this->pdfReportService = $pdfReportService;
+        $this->calculationService = $calculationService;
     }
 
     /**
@@ -43,13 +49,16 @@ class ReportController extends Controller
         $totalFeedKg = (float) $cycle->dailyRecords->sum('feed_kg');
         $totalMortality = (int) $cycle->dailyRecords->sum('mortality');
 
+        $financials = $this->calculationService->calculateFinancials($cycle);
+
         return Inertia::render('Cycle/Report', [
             'cycle' => $cycle,
             'withdrawalStatus' => $withdrawalStatus,
             'summary' => [
                 'total_feed_kg' => $totalFeedKg,
                 'total_mortality' => $totalMortality,
-            ]
+            ],
+            'financials' => $financials,
         ]);
     }
 

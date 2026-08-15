@@ -43,10 +43,13 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
         today_tasks: [],
     });
 
-    const currentDay = activeCycle.day_number;
-    const targetDays = activeCycle.target_days;
+    const currentDay = Math.max(1, activeCycle.day_number || 1);
+    const targetDays = Math.max(1, activeCycle.target_days || 35);
     const population = activeCycle.latest_record ? activeCycle.latest_record.live_population : activeCycle.doc_count;
-    const progress = Math.min(100, Math.round((currentDay / targetDays) * 100));
+    const progress = Math.min(100, Math.max(0, Math.round((currentDay / targetDays) * 100)));
+    const coopDisplayName = (activeCycle.coop?.coop_code || 'Kandang A1').toLowerCase().startsWith('kandang')
+        ? activeCycle.coop.coop_code
+        : `Kandang ${activeCycle.coop?.coop_code || 'A1'}`;
 
     // Real today_tasks from backend
     const todayTasks = activeCycle.today_tasks || [];
@@ -110,7 +113,6 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
                             <img
                                 src="/images/PRIMARY LOGO 2.png"
                                 alt="Angonku.id"
-                                loading="lazy"
                                 width={100}
                                 height={28}
                                 style={{ height: '28px', objectFit: 'contain' }}
@@ -122,7 +124,6 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
                                 <img
                                     src="/images/material-symbols_history-rounded.png"
                                     alt="History"
-                                    loading="lazy"
                                     width={20}
                                     height={20}
                                     style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)' }}
@@ -132,7 +133,6 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
                                 <img
                                     src="/images/mingcute_notification-fill.png"
                                     alt="Notification"
-                                    loading="lazy"
                                     width={20}
                                     height={20}
                                     style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)' }}
@@ -230,7 +230,7 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                <h2 style={{ fontSize: '24px', fontWeight: '700', margin: 0 }}>Kandang {activeCycle.coop.coop_code}</h2>
+                                <h2 style={{ fontSize: '24px', fontWeight: '700', margin: 0 }}>{coopDisplayName}</h2>
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -259,7 +259,6 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
                                     <img
                                         src="/images/mingcute_right-fill.png"
                                         alt="Detail"
-                                        loading="lazy"
                                         width={18}
                                         height={18}
                                         style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }}
@@ -281,6 +280,40 @@ export default function Dashboard({ activeCycles = [], weather, weather_forecast
                             </div>
                         </div>
                     </div>
+
+                    {/* B2B HARVEST OFFTAKING BANNER */}
+                    <Link
+                        href={route('harvest.listings.index')}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            backgroundColor: '#133020',
+                            color: 'white',
+                            padding: '14px 18px',
+                            borderRadius: '16px',
+                            textDecoration: 'none',
+                            boxShadow: '0 4px 12px rgba(19, 48, 32, 0.15)',
+                            border: '1px solid rgba(240, 190, 73, 0.3)'
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#327039', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                                🍗
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '11px', color: '#F0BE49', fontWeight: '700', letterSpacing: '0.4px' }}>
+                                    B2B OFFTAKING / PASAR PANEN
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
+                                    Jual Panen ke RPA Bersertifikat
+                                </div>
+                            </div>
+                        </div>
+                        <span style={{ backgroundColor: '#F0BE49', color: '#133020', fontSize: '11px', fontWeight: '800', padding: '6px 12px', borderRadius: '8px' }}>
+                            Ajukan &rarr;
+                        </span>
+                    </Link>
 
                     {/* METRICS ROW (FCR, MATI, INDEX) */}
                     <div style={{ margin: 0 }}>

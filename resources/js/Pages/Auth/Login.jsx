@@ -11,15 +11,22 @@ export default function Login({ status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('login'), {
             onFinish: () => reset('password'),
         });
     };
 
+    const fillDemo = (email) => {
+        setData({
+            ...data,
+            email: email,
+            password: 'password',
+        });
+    };
+
     return (
         <GuestLayout>
-            <Head title="Masuk" />
+            <Head title="Masuk ke Akun" />
 
             <h2 className="auth-title">Selamat Datang! 👋</h2>
             <p className="auth-subtitle">Masuk ke akun Angonku kamu</p>
@@ -29,6 +36,63 @@ export default function Login({ status, canResetPassword }) {
                     {status}
                 </div>
             )}
+
+            {/* Quick Demo Role Selector */}
+            <div style={{ marginBottom: '18px', padding: '10px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
+                    ⚡ PILIH AKUN DEMO CEPAT (1-KLIK):
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                    <button
+                        type="button"
+                        onClick={() => fillDemo('test@example.com')}
+                        style={{
+                            padding: '6px 4px',
+                            borderRadius: '8px',
+                            border: '1px solid #CBD5E1',
+                            backgroundColor: data.email === 'test@example.com' ? '#133020' : '#FFFFFF',
+                            color: data.email === 'test@example.com' ? '#FFFFFF' : '#1E293B',
+                            fontSize: '10.5px',
+                            fontWeight: '700',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Peternak
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => fillDemo('koperasi@angonku.id')}
+                        style={{
+                            padding: '6px 4px',
+                            borderRadius: '8px',
+                            border: '1px solid #CBD5E1',
+                            backgroundColor: data.email === 'koperasi@angonku.id' ? '#133020' : '#FFFFFF',
+                            color: data.email === 'koperasi@angonku.id' ? '#FFFFFF' : '#1E293B',
+                            fontSize: '10.5px',
+                            fontWeight: '700',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Koperasi
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => fillDemo('rpa@angonku.id')}
+                        style={{
+                            padding: '6px 4px',
+                            borderRadius: '8px',
+                            border: '1px solid #CBD5E1',
+                            backgroundColor: data.email === 'rpa@angonku.id' ? '#133020' : '#FFFFFF',
+                            color: data.email === 'rpa@angonku.id' ? '#FFFFFF' : '#1E293B',
+                            fontSize: '10.5px',
+                            fontWeight: '700',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Buyer RPA
+                    </button>
+                </div>
+            </div>
 
             <form onSubmit={submit}>
                 {/* Email */}

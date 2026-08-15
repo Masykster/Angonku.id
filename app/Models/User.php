@@ -30,6 +30,8 @@ class User extends Authenticatable
         'failed_login',
         'locked_until',
         'is_active',
+        'role',
+        'cooperative_id',
     ];
 
     /**
@@ -57,8 +59,43 @@ class User extends Authenticatable
         ];
     }
 
+    public function isKoperasiAdmin(): bool
+    {
+        return $this->role === 'koperasi_admin';
+    }
+
+    public function isRpaBuyer(): bool
+    {
+        return $this->role === 'rpa_buyer';
+    }
+
+    public function isPeternak(): bool
+    {
+        return $this->role === 'peternak' || empty($this->role);
+    }
+
+    public function cooperative()
+    {
+        return $this->belongsTo(Cooperative::class);
+    }
+
     public function farms()
     {
         return $this->hasMany(Farm::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function harvestListings()
+    {
+        return $this->hasMany(HarvestListing::class);
+    }
+
+    public function harvestContracts()
+    {
+        return $this->hasMany(HarvestContract::class, 'buyer_user_id');
     }
 }

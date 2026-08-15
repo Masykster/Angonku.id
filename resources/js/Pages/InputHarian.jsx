@@ -53,7 +53,6 @@ export default function InputHarian() {
                                     src="/images/LEFT.png"
                                     alt="Kembali"
                                     className="back-btn-icon"
-                                    loading="lazy"
                                 />
                             </Link>
                         </div>

@@ -309,7 +309,6 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                     src="/images/mingcute_right-fill.png" 
                                     alt="Chevron" 
                                     className="settings-chevron-right" 
-                                    loading="lazy"
                                 />
                             </div>
 
@@ -331,7 +330,6 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                                             src="/images/ooui_home.png" 
                                                             alt="Farm Icon" 
                                                             className="settings-farm-icon" 
-                                                            loading="lazy"
                                                         />
                                                     </div>
                                                     <div className="settings-user-info">
@@ -343,7 +341,6 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                                     src="/images/mingcute_right-fill.png" 
                                                     alt="Chevron" 
                                                     className="settings-chevron-right" 
-                                                    loading="lazy"
                                                 />
                                             </div>
 
@@ -388,7 +385,6 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                                 <img 
                                                     src="/images/fe_plus.png" 
                                                     alt="Plus" 
-                                                    loading="lazy"
                                                     style={{ width: '12px', height: '12px', filter: 'invert(36%) sepia(21%) saturate(1142%) hue-rotate(78deg) brightness(97%) contrast(90%)' }} 
                                                 />
                                                 Tambah Kandang
@@ -422,7 +418,6 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                         <img 
                                             src="/images/fe_plus.png" 
                                             alt="Plus" 
-                                            loading="lazy"
                                             style={{ width: '14px', height: '14px', filter: 'invert(36%) sepia(21%) saturate(1142%) hue-rotate(78deg) brightness(97%) contrast(90%)' }} 
                                         />
                                         Tambah Lokasi Baru
@@ -441,7 +436,6 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                             <img 
                                                 src="/images/fe_plus.png" 
                                                 alt="Plus" 
-                                                loading="lazy"
                                                 style={{ width: '12px', height: '12px', filter: 'invert(36%) sepia(21%) saturate(1142%) hue-rotate(78deg) brightness(97%) contrast(90%)' }} 
                                             />
                                             Setup Kandang Baru
@@ -449,6 +443,34 @@ export default function Edit({ auth, dbCages = [], dbFarms = [] }) {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Section: B2B Offtaking & Pasar Panen */}
+                            <h2 className="settings-section-title">B2B Offtaking & Pasar Panen</h2>
+                            <div className="settings-farm-card" style={{ padding: '16px', marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ fontSize: '24px' }}>🍗</span>
+                                        <div>
+                                            <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--color-forest)' }}>Bursa Panen ke RPA</div>
+                                            <div style={{ fontSize: '11px', color: '#64748B' }}>Ajukan tonase panen bersertifikat bebas residu</div>
+                                        </div>
+                                    </div>
+                                    <Link
+                                        href={route('harvest.listings.index')}
+                                        style={{
+                                            backgroundColor: 'var(--color-forest)',
+                                            color: 'white',
+                                            padding: '8px 14px',
+                                            borderRadius: '10px',
+                                            fontSize: '12px',
+                                            fontWeight: '700',
+                                            textDecoration: 'none'
+                                        }}
+                                    >
+                                        Buka &rarr;
+                                    </Link>
+                                </div>
+                            </div>
 
                             {/* Section: Pengaturan Notifikasi */}
                             <h2 className="settings-section-title">Pengaturan Notifikasi</h2>

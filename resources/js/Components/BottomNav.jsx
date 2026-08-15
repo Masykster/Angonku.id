@@ -6,11 +6,27 @@ export default function BottomNav({ activeTab = 'home' }) {
         ? route('cycles.records.create', { cycle: active_cycle_id }) 
         : route('cycle.create');
 
-    const tabs = [
+    const user = usePage().props.auth?.user;
+    const isKoperasi = user?.role === 'koperasi_admin';
+    const isRpa = user?.role === 'rpa_buyer';
+
+    const tabs = isKoperasi ? [
+        { id: 'koperasi', label: 'Koperasi', icon: KoperasiIcon, href: route('koperasi.dashboard') },
+        { id: 'pasar', label: 'Pasar B2B', icon: MarketplaceIcon, href: route('marketplace') },
+        { id: 'spacer', label: '', icon: null },
+        { id: 'rpa', label: 'Bursa RPA', icon: RpaIcon, href: route('rpa.portal') },
+        { id: 'profil', label: 'Profil', icon: ProfilIcon, href: '/profile' },
+    ] : isRpa ? [
+        { id: 'rpa', label: 'Bursa RPA', icon: RpaIcon, href: route('rpa.portal') },
+        { id: 'pasar', label: 'Pasar B2B', icon: MarketplaceIcon, href: route('marketplace') },
+        { id: 'spacer', label: '', icon: null },
+        { id: 'home', label: 'Dashboard', icon: HomeIcon, href: '/' },
+        { id: 'profil', label: 'Profil', icon: ProfilIcon, href: '/profile' },
+    ] : [
         { id: 'home', label: 'Home', icon: HomeIcon, href: '/' },
         { id: 'timeline', label: 'Timeline', icon: TimelineIcon, href: active_cycle_id ? route('cycle.show', { cycle: active_cycle_id }) : null },
         { id: 'spacer', label: '', icon: null },
-        { id: 'kesehatan', label: 'Kesehatan', icon: KesehatanIcon, href: active_cycle_id ? route('cycles.health.index', { cycle: active_cycle_id }) : null },
+        { id: 'pasar', label: 'Pasar', icon: MarketplaceIcon, href: route('marketplace') },
         { id: 'profil', label: 'Profil', icon: ProfilIcon, href: '/profile' },
     ];
 
@@ -24,7 +40,6 @@ export default function BottomNav({ activeTab = 'home' }) {
                     width={24}
                     height={24}
                     className="fab-icon-img"
-                    loading="lazy"
                 />
             </Link>
 
@@ -78,7 +93,6 @@ function HomeIcon({ active }) {
             width={24}
             height={24}
             className={`nav-icon-img ${active ? 'active' : ''}`}
-            loading="lazy"
         />
     );
 }
@@ -91,7 +105,6 @@ function TimelineIcon({ active }) {
             width={24}
             height={24}
             className={`nav-icon-img ${active ? 'active' : ''}`}
-            loading="lazy"
         />
     );
 }
@@ -104,7 +117,6 @@ function KesehatanIcon({ active }) {
             width={24}
             height={24}
             className={`nav-icon-img ${active ? 'active' : ''}`}
-            loading="lazy"
         />
     );
 }
@@ -117,7 +129,79 @@ function ProfilIcon({ active }) {
             width={24}
             height={24}
             className={`nav-icon-img ${active ? 'active' : ''}`}
-            loading="lazy"
         />
     );
 }
+
+function MarketplaceIcon({ active }) {
+    return (
+        <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`nav-icon-img ${active ? 'active' : ''}`}
+            style={{
+                opacity: active ? 1 : 0.55,
+                color: active ? 'var(--color-forest)' : '#A0A8A0',
+                transition: 'all 0.2s ease',
+            }}
+        >
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+    );
+}
+
+function KoperasiIcon({ active }) {
+    return (
+        <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`nav-icon-img ${active ? 'active' : ''}`}
+            style={{
+                opacity: active ? 1 : 0.55,
+                color: active ? 'var(--color-forest)' : '#A0A8A0',
+                transition: 'all 0.2s ease',
+            }}
+        >
+            <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4" />
+        </svg>
+    );
+}
+
+function RpaIcon({ active }) {
+    return (
+        <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`nav-icon-img ${active ? 'active' : ''}`}
+            style={{
+                opacity: active ? 1 : 0.55,
+                color: active ? 'var(--color-forest)' : '#A0A8A0',
+                transition: 'all 0.2s ease',
+            }}
+        >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 12l3 3 5-5" />
+        </svg>
+    );
+}
+

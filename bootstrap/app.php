@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'onboarding.completed' => \App\Http\Middleware\OnboardingCompleted::class,
             'withdrawal.safe' => \App\Http\Middleware\EnsureWithdrawalSafe::class,
+            'cooperative.license' => \App\Http\Middleware\EnsureCooperativeLicense::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

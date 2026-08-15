@@ -4,9 +4,17 @@ namespace App\Services;
 
 use App\Models\Cycle;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\CalculationService;
 
 class PdfReportService
 {
+    protected $calculationService;
+
+    public function __construct(CalculationService $calculationService)
+    {
+        $this->calculationService = $calculationService;
+    }
+
     /**
      * Generate PDF for a cycle report and return download stream.
      */
@@ -19,10 +27,12 @@ class PdfReportService
         }, 'harvestRecord']);
 
         $totalFeedKg = (float) $cycle->dailyRecords->sum('feed_kg');
+        $financials = $this->calculationService->calculateFinancials($cycle);
 
         $pdf = Pdf::loadView('pdf.cycle-report', [
             'cycle' => $cycle,
             'total_feed_kg' => $totalFeedKg,
+            'financials' => $financials,
         ]);
 
         $safeCoopCode = str_replace(' ', '_', $cycle->coop->coop_code);

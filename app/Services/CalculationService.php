@@ -96,4 +96,78 @@ class CalculationService
             'total_revenue' => $totalRevenue,
         ];
     }
+
+    /**
+     * Calculate financial report for a cycle.
+     */
+    public function calculateFinancials($cycle): array
+    {
+        $totalFeedKg = (float) ($cycle->dailyRecords ? $cycle->dailyRecords->sum('feed_kg') : 0);
+        $docCount = (int) $cycle->doc_count;
+        $priceDoc = $cycle->price_doc > 0 ? (float) $cycle->price_doc : 7000;
+
+        // Constants
+        $feedPricePerKg = 8500;
+        $medCostPerDoc = 1500;
+        $opCostPerDoc = 1000;
+        $fallbackSellPricePerKg = 21000;
+
+        // Expenses
+        $biayaDoc = $docCount * $priceDoc;
+        $biayaPakan = $totalFeedKg * $feedPricePerKg;
+        $biayaObat = $docCount * $medCostPerDoc;
+        $biayaOperasional = $docCount * $opCostPerDoc;
+        $totalPengeluaran = $biayaDoc + $biayaPakan + $biayaObat + $biayaOperasional;
+
+        // Revenue & metrics
+        $isHarvested = ($cycle->status === 'harvested' || $cycle->harvestRecord !== null);
+        $pemasukan = 0.0;
+        $totalWeightKg = 0.0;
+        $harvestCount = 0;
+        $pricePerKg = 0.0;
+        $isEstimatedRevenue = false;
+
+        if ($isHarvested && $cycle->harvestRecord) {
+            $totalWeightKg = (float) $cycle->harvestRecord->total_weight_kg;
+            $harvestCount = (int) $cycle->harvestRecord->harvest_count;
+            $pricePerKg = $cycle->harvestRecord->price_per_kg ? (float) $cycle->harvestRecord->price_per_kg : $fallbackSellPricePerKg;
+            if (!$cycle->harvestRecord->price_per_kg) {
+                $isEstimatedRevenue = true;
+            }
+            $pemasukan = $cycle->harvestRecord->total_revenue ? (float) $cycle->harvestRecord->total_revenue : ($totalWeightKg * $pricePerKg);
+        } else {
+            $isEstimatedRevenue = true;
+            $lastDaily = $cycle->dailyRecords ? $cycle->dailyRecords->last() : null;
+            $livePopulation = $lastDaily ? (int) $lastDaily->live_population : $docCount;
+            $avgWeightG = ($lastDaily && $lastDaily->avg_weight_g > 0) ? (float) $lastDaily->avg_weight_g : 1500; // default 1.5kg
+            $totalWeightKg = $livePopulation * ($avgWeightG / 1000);
+            $harvestCount = $livePopulation;
+            $pricePerKg = $fallbackSellPricePerKg;
+            $pemasukan = $totalWeightKg * $pricePerKg;
+        }
+
+        $keuntungan = $pemasukan - $totalPengeluaran;
+        $hppKg = $totalWeightKg > 0 ? $totalPengeluaran / $totalWeightKg : 0;
+        $hppEkor = $harvestCount > 0 ? $totalPengeluaran / $harvestCount : 0;
+        $roi = $totalPengeluaran > 0 ? ($keuntungan / $totalPengeluaran) * 100 : 0;
+
+        return [
+            'biaya_doc' => $biayaDoc,
+            'biaya_pakan' => $biayaPakan,
+            'biaya_obat' => $biayaObat,
+            'biaya_operasional' => $biayaOperasional,
+            'total_pengeluaran' => $totalPengeluaran,
+            'pemasukan' => $pemasukan,
+            'keuntungan' => $keuntungan,
+            'hpp_kg' => $hppKg,
+            'hpp_ekor' => $hppEkor,
+            'roi' => $roi,
+            'is_estimated' => $isEstimatedRevenue,
+            'price_per_kg' => $pricePerKg,
+            'feed_price_per_kg' => $feedPricePerKg,
+            'med_cost_per_doc' => $medCostPerDoc,
+            'op_cost_per_doc' => $opCostPerDoc,
+        ];
+    }
 }
+

@@ -13,6 +13,11 @@ use App\Http\Controllers\CommodityController;
 use App\Http\Controllers\HarvestRecordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\KoperasiDashboardController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\DistributorOrderController;
+use App\Http\Controllers\HarvestListingController;
+use App\Http\Controllers\RpaPortalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -154,7 +159,6 @@ Route::middleware(['auth', 'active'])->group(function () {
                         'target_days' => $targetDaysInput,
                         'status' => 'active',
                     ]);
-                    \App\Services\GoldenTimelineService::seedForCycle($activeCycle);
                 } else {
                     $activeCycle->update([
                         'doc_count' => $validated['jumlahBibit'],
@@ -265,6 +269,27 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         // AI Chatbot
         Route::post('/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.chat');
+
+        // MODUL 1: B2B Enterprise SaaS Koperasi (License Protected)
+        Route::middleware(['cooperative.license'])->group(function () {
+            Route::get('/koperasi/dashboard', [KoperasiDashboardController::class, 'index'])->name('koperasi.dashboard');
+            Route::get('/koperasi/farms/{id}', [KoperasiDashboardController::class, 'farmDetail'])->name('koperasi.farm-detail');
+        });
+
+        // MODUL 2: B2B Input Marketplace (Pakan, DOC, OVK, Peralatan)
+        Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace');
+        Route::get('/marketplace/checkout', [MarketplaceController::class, 'checkout'])->name('marketplace.checkout');
+        Route::post('/marketplace/orders', [MarketplaceController::class, 'storeOrder'])->name('marketplace.order.store');
+        Route::get('/distributor/orders', [DistributorOrderController::class, 'index'])->name('distributor.orders');
+        Route::patch('/distributor/orders/{id}/status', [DistributorOrderController::class, 'updateStatus'])->name('distributor.orders.status');
+
+        // MODUL 3: B2B Harvest Offtaking & RPA Portal (Withdrawal-Safe Certified)
+        Route::get('/harvest/listings', [HarvestListingController::class, 'index'])->name('harvest.listings.index');
+        Route::post('/harvest/listings', [HarvestListingController::class, 'store'])->name('harvest.listings.store');
+        Route::delete('/harvest/listings/{id}', [HarvestListingController::class, 'destroy'])->name('harvest.listings.destroy');
+
+        Route::get('/rpa/portal', [RpaPortalController::class, 'index'])->name('rpa.portal');
+        Route::post('/rpa/listings/{id}/purchase', [RpaPortalController::class, 'purchaseListing'])->name('rpa.purchase');
     });
 });
 

@@ -2,7 +2,189 @@ import { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import BottomNav from '@/Components/BottomNav';
 
-export default function Report({ cycle, withdrawalStatus = {}, summary = {} }) {
+function FinancialsCard({ cycle, financials = {}, summary = {}, fcrVal, mrVal }) {
+    const [showFinanceDetails, setShowFinanceDetails] = useState(false);
+
+    if (!financials || Object.keys(financials).length === 0) return null;
+
+    return (
+        <div className="input-group-card" style={{ margin: 0, border: '1.5px solid #16A34A', borderRadius: '18px', backgroundColor: '#FFFFFF', padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <h3 style={{ fontSize: '13.5px', fontWeight: '800', color: '#133020', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }}></span>
+                    {financials.is_estimated ? 'Estimasi Laporan Keuangan' : 'Laporan Keuangan Siklus'}
+                </h3>
+                <span style={{
+                    fontSize: '9px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px',
+                    backgroundColor: financials.keuntungan >= 0 ? '#ECFDF5' : '#FFF1F2',
+                    color: financials.keuntungan >= 0 ? '#065F46' : '#9F1239',
+                    border: financials.keuntungan >= 0 ? '1px solid #A7F3D0' : '1px solid #FECDD3'
+                }}>
+                    {financials.keuntungan >= 0 ? 'UNTUNG' : 'RUGI'}
+                </span>
+            </div>
+
+            {/* Keuntungan Banner */}
+            <div style={{
+                backgroundColor: financials.keuntungan >= 0 ? '#ECFDF5' : '#FFF1F2',
+                border: financials.keuntungan >= 0 ? '1px solid #A7F3D0' : '1px solid #FECDD3',
+                borderRadius: '16px', padding: '14px', textAlign: 'center', marginBottom: '14px'
+            }}>
+                <span style={{ fontSize: '9.5px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>
+                    {financials.is_estimated ? 'Estimasi Keuntungan Bersih' : 'Keuntungan Bersih'}
+                </span>
+                <div style={{
+                    fontSize: '22px', fontWeight: '900',
+                    color: financials.keuntungan >= 0 ? '#065F46' : '#9F1239',
+                    marginTop: '2px'
+                }}>
+                    Rp {Math.round(financials.keuntungan).toLocaleString('id-ID')}
+                </div>
+                <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '4px' }}>
+                    ROI: <span style={{ fontWeight: '800', color: financials.keuntungan >= 0 ? '#065F46' : '#9F1239' }}>
+                        {financials.roi.toFixed(2)}%
+                    </span>
+                </div>
+            </div>
+
+            {/* HPP and Summary Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
+                <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '9.5px', fontWeight: '700', color: '#64748B', display: 'block' }}>HPP / KG</span>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: '#133020', display: 'block', marginTop: '2px' }}>
+                        Rp {Math.round(financials.hpp_kg).toLocaleString('id-ID')}
+                    </span>
+                </div>
+                <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '9.5px', fontWeight: '700', color: '#64748B', display: 'block' }}>HPP / EKOR</span>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: '#133020', display: 'block', marginTop: '2px' }}>
+                        Rp {Math.round(financials.hpp_ekor).toLocaleString('id-ID')}
+                    </span>
+                </div>
+            </div>
+
+            {/* Cost Details Toggle */}
+            <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px', marginBottom: '12px' }}>
+                <button
+                    type="button"
+                    onClick={() => setShowFinanceDetails(!showFinanceDetails)}
+                    style={{
+                        width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        background: 'none', border: 'none', padding: '6px 0', cursor: 'pointer',
+                        fontSize: '11.5px', fontWeight: '800', color: '#16A34A'
+                    }}
+                >
+                    <span>Rincian Pendapatan & Biaya</span>
+                    <span>{showFinanceDetails ? '▲' : '▼'}</span>
+                </button>
+
+                {showFinanceDetails && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '11px', marginTop: '10px', padding: '10px', backgroundColor: '#F8FAFC', borderRadius: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '700', borderBottom: '1px solid #E2E8F0', paddingBottom: '4px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>Total Pendapatan</span>
+                            <span style={{ color: 'var(--color-forest)' }}>Rp {Math.round(financials.pemasukan).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', paddingLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>Bobot Panen</span>
+                            <span>{parseFloat(cycle.harvest_record?.total_weight_kg || (financials.pemasukan / financials.price_per_kg)).toFixed(1)} kg</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', paddingLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>Harga Jual Terhitung</span>
+                            <span>Rp {Math.round(financials.price_per_kg).toLocaleString('id-ID')}/kg</span>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '700', borderBottom: '1px solid #E2E8F0', paddingTop: '4px', paddingBottom: '4px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>Total Pengeluaran</span>
+                            <span style={{ color: 'var(--color-red)' }}>Rp {Math.round(financials.total_pengeluaran).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', paddingLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>1. Biaya DOC ({cycle.doc_count.toLocaleString()} ekor)</span>
+                            <span>Rp {Math.round(financials.biaya_doc).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', paddingLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>2. Biaya Pakan ({summary.total_feed_kg?.toLocaleString('id-ID')} kg)</span>
+                            <span>Rp {Math.round(financials.biaya_pakan).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', paddingLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>3. Biaya Obat & Vaksin (Est.)</span>
+                            <span>Rp {Math.round(financials.biaya_obat).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', paddingLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>4. Biaya Operasional & Listrik (Est.)</span>
+                            <span>Rp {Math.round(financials.biaya_operasional).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ fontSize: '8px', color: 'var(--color-text-secondary)', borderTop: '1px dashed #E2E8F0', paddingTop: '4px', marginTop: '4px', fontStyle: 'italic' }}>
+                            * Pakan dihitung Rp {financials.feed_price_per_kg.toLocaleString('id-ID')}/kg, obat/vaksin Rp {financials.med_cost_per_doc.toLocaleString('id-ID')}/ekor, operasional Rp {financials.op_cost_per_doc.toLocaleString('id-ID')}/ekor.
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* EVALUASI & REKOMENDASI SIKLUS ALERT CARD */}
+            <div style={{
+                backgroundColor: '#FFFBEB', border: '1px solid #F59E0B', borderRadius: '16px', padding: '14px', marginTop: '6px'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px' }}>💡</span>
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#B45309' }}>Evaluasi & Rekomendasi Siklus</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '10px', color: '#78350F', lineHeight: '1.4' }}>
+                    {fcrVal !== null && (
+                        <div>
+                            {fcrVal > 1.9 ? (
+                                <span>
+                                    🔴 <strong>FCR Tinggi ({fcrVal.toFixed(3)})</strong>: Konversi pakan tidak efisien. Di siklus berikutnya, perketat pengawasan pakan tumpah, jaga suhu brooding agar optimal, dan evaluasi kualitas pakan.
+                                </span>
+                            ) : fcrVal >= 1.6 ? (
+                                <span>
+                                    🟡 <strong>FCR Sedang ({fcrVal.toFixed(3)})</strong>: Cukup baik namun masih bisa dioptimalkan. Perbaiki manajemen ventilasi sekam kandang dan pastikan tempat pakan selalu bersih untuk mendorong penyerapan nutrisi maksimal.
+                                </span>
+                            ) : (
+                                <span>
+                                    🟢 <strong>FCR Sangat Efisien ({fcrVal.toFixed(3)})</strong>: Konversi pakan sangat baik! Manajemen pemberian pakan Anda sudah optimal, pertahankan standar ini.
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {mrVal !== null && (
+                        <div>
+                            {mrVal > 7.0 ? (
+                                <span>
+                                    🔴 <strong>Mortalitas Tinggi ({mrVal.toFixed(1)}%)</strong>: Kematian ayam melebihi batas normal. Disarankan untuk memperketat biosekuriti gerbang kandang, melakukan penyemprotan desinfektan berkala, serta berdiskusi dengan dokter hewan untuk jadwal vaksinasi yang lebih presisi.
+                                </span>
+                            ) : mrVal >= 3.0 ? (
+                                <span>
+                                    🟡 <strong>Mortalitas Sedang ({mrVal.toFixed(1)}%)</strong>: Tingkat kematian perlu diwaspadai. Pastikan suhu heater stabil saat DOC masuk (day 1-7) dan kelembaban litter tetap terjaga kering.
+                                </span>
+                            ) : (
+                                <span>
+                                    🟢 <strong>Mortalitas Rendah ({mrVal.toFixed(1)}%)</strong>: Tingkat kelangsungan hidup luar biasa! Prosedur sanitasi dan perawatan harian Anda bekerja dengan sangat baik.
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {financials.roi !== null && (
+                        <div>
+                            {financials.roi < 0 ? (
+                                <span>
+                                    📉 <strong>Rekomendasi Finansial</strong>: Siklus mengalami estimasi kerugian bersih. Untuk siklus berikutnya, targetkan meminimalkan FCR dan tingkat kematian agar HPP (Harga Pokok Produksi) dapat ditekan di bawah harga pasar ayam hidup.
+                                </span>
+                            ) : (
+                                <span>
+                                    📈 <strong>Evaluasi Finansial</strong>: Siklus berhasil mencatatkan keuntungan dengan ROI {financials.roi.toFixed(2)}%. Evaluasi selanjutnya adalah menguji supplier DOC lain untuk membandingkan pertumbuhan bobot rata-rata harian (ADG) guna mendongkrak keuntungan lebih tinggi lagi.
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function Report({ cycle, withdrawalStatus = {}, summary = {}, financials = {} }) {
     const isHarvested = cycle.status === 'harvested' || cycle.harvest_record !== null;
     const [activeTab, setActiveTab] = useState(isHarvested ? 'ringkasan' : 'panen');
 
@@ -35,23 +217,23 @@ export default function Report({ cycle, withdrawalStatus = {}, summary = {} }) {
         const val = parseFloat(fcr);
         if (val < 1.6) return { label: '✅ OKE', style: 'green' };
         if (val <= 1.9) return { label: '⚠️ WASPADA', style: 'yellow' };
-        return { label: '🚨 KRITIS', style: 'red' };
+        return { label: 'KRITIS', style: 'red' };
     };
 
     const getMortalityStyle = (mr) => {
         if (mr === undefined || mr === null) return { label: '-', class: 'neutral' };
         const val = parseFloat(mr);
-        if (val < 3.0) return { label: '✅ OKE', style: 'green' };
-        if (val <= 7.0) return { label: '⚠️ WASPADA', style: 'yellow' };
-        return { label: '🚨 KRITIS', style: 'red' };
+        if (val < 3.0) return { label: 'OPTIMAL', style: 'green' };
+        if (val <= 7.0) return { label: 'WASPADA', style: 'yellow' };
+        return { label: 'KRITIS', style: 'red' };
     };
 
     const getIpStyle = (ip) => {
         if (!ip) return { label: '-', class: 'neutral' };
         const val = parseFloat(ip);
-        if (val >= 350) return { label: '✅ OKE', style: 'green' };
-        if (val >= 300) return { label: '⚠️ WASPADA', style: 'yellow' };
-        return { label: '🚨 KRITIS', style: 'red' };
+        if (val >= 350) return { label: 'OPTIMAL', style: 'green' };
+        if (val >= 300) return { label: 'WASPADA', style: 'yellow' };
+        return { label: 'KRITIS', style: 'red' };
     };
 
     // Date formatting helper
@@ -72,25 +254,27 @@ export default function Report({ cycle, withdrawalStatus = {}, summary = {} }) {
     const mortalityStats = getMortalityStyle(mrVal);
     const ipStats = getIpStyle(ipVal);
 
+    const coopTitle = (cycle.coop?.coop_code || 'A1').toLowerCase().startsWith('kandang') ? cycle.coop.coop_code : `Kandang ${cycle.coop?.coop_code || 'A1'}`;
+
     return (
         <>
             <Head title={isHarvested ? "Laporan Siklus Selesai" : "Panen & Laporan Siklus"} />
 
-            <div className="mobile-container" style={{ paddingBottom: '90px', backgroundColor: '#F7F3ED' }}>
+            <div className="mobile-container" style={{ paddingBottom: '90px', backgroundColor: '#F7F3ED', minHeight: '100vh' }}>
                 
                 {/* HEADER */}
-                <div style={{ backgroundColor: '#2D6A4F', color: 'white', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <Link href="/dashboard" className="back-btn-circle" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)', border: 'none', width: '32px', height: '32px', borderRadius: '50%' }}>
+                <div style={{ backgroundColor: '#133020', color: 'white', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
+                    <Link href="/dashboard" className="back-btn-circle" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)', border: 'none', width: '34px', height: '34px', borderRadius: '50%' }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12" />
                             <polyline points="12 19 5 12 12 5" />
                         </svg>
                     </Link>
                     <div>
-                        <h1 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>
-                            {isHarvested ? '🎉 Siklus Selesai!' : '🌾 Menu Panen Kandang'}
+                        <h1 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#FFFFFF' }}>
+                            {isHarvested ? 'Laporan Siklus Selesai' : 'Menu Panen & Evaluasi'}
                         </h1>
-                        <span style={{ fontSize: '11px', opacity: 0.85 }}>Kandang {cycle.coop?.coop_code} · {cycle.coop?.coop_type === 'open_house' ? 'Open House' : 'Close House'}</span>
+                        <span style={{ fontSize: '11px', color: '#CBD5E1' }}>{coopTitle} · {cycle.coop?.coop_type === 'open_house' ? 'Open House' : 'Close House'}</span>
                     </div>
                 </div>
 
@@ -240,6 +424,8 @@ export default function Report({ cycle, withdrawalStatus = {}, summary = {} }) {
                                 </div>
                             </div>
 
+                            <FinancialsCard cycle={cycle} financials={financials} summary={summary} fcrVal={fcrVal} mrVal={mrVal} />
+
                             {/* Download Action Buttons */}
                             <a 
                                 href={route('cycles.report.download', { cycle: cycle.id })} 
@@ -357,6 +543,8 @@ export default function Report({ cycle, withdrawalStatus = {}, summary = {} }) {
                                             </span>
                                         </div>
                                     </div>
+
+                                    <FinancialsCard cycle={cycle} financials={financials} summary={summary} fcrVal={fcrVal} mrVal={mrVal} />
 
                                     {/* Withdrawal Status Banner */}
                                     {withdrawalStatus.has_active ? (
