@@ -102,7 +102,22 @@ class CalculationService
      */
     public function calculateFinancials($cycle): array
     {
-        $totalFeedKg = (float) ($cycle->dailyRecords ? $cycle->dailyRecords->sum('feed_kg') : 0);
+        // ⚡ Bolt Optimization: Avoid lazy loading all DailyRecord models into memory if relation is not loaded.
+        // If dailyRecords relation is already eager-loaded, use the in-memory collection.
+        // Otherwise, perform direct DB aggregate queries (SUM and latest record) to reduce memory overhead and speed up execution.
+        $hasLoadedRelation = method_exists($cycle, 'relationLoaded') && $cycle->relationLoaded('dailyRecords');
+
+        if ($hasLoadedRelation) {
+            $totalFeedKg = (float) ($cycle->dailyRecords ? $cycle->dailyRecords->sum('feed_kg') : 0);
+            $lastDaily = $cycle->dailyRecords ? $cycle->dailyRecords->last() : null;
+        } elseif (method_exists($cycle, 'dailyRecords')) {
+            $totalFeedKg = (float) $cycle->dailyRecords()->sum('feed_kg');
+            $lastDaily = $cycle->dailyRecords()->latest('record_date')->first();
+        } else {
+            $totalFeedKg = (float) ($cycle->dailyRecords ? $cycle->dailyRecords->sum('feed_kg') : 0);
+            $lastDaily = $cycle->dailyRecords ? $cycle->dailyRecords->last() : null;
+        }
+
         $docCount = (int) $cycle->doc_count;
         $priceDoc = $cycle->price_doc > 0 ? (float) $cycle->price_doc : 7000;
 
@@ -137,7 +152,6 @@ class CalculationService
             $pemasukan = $cycle->harvestRecord->total_revenue ? (float) $cycle->harvestRecord->total_revenue : ($totalWeightKg * $pricePerKg);
         } else {
             $isEstimatedRevenue = true;
-            $lastDaily = $cycle->dailyRecords ? $cycle->dailyRecords->last() : null;
             $livePopulation = $lastDaily ? (int) $lastDaily->live_population : $docCount;
             $avgWeightG = ($lastDaily && $lastDaily->avg_weight_g > 0) ? (float) $lastDaily->avg_weight_g : 1500; // default 1.5kg
             $totalWeightKg = $livePopulation * ($avgWeightG / 1000);
