@@ -1,6 +1,6 @@
-# TernaKuy (PiboFarm) - Sistem Manajemen Peternakan Ayam Broiler Pintar
+# Angonku - Sistem Manajemen Peternakan Ayam Broiler Pintar
 
-TernaKuy (sebelumnya PiboFarm) adalah platform manajemen poultry digital modern yang dirancang untuk membantu peternak ayam broiler memantau siklus hidup, mengoptimalkan pakan, menjaga keamanan pangan lewat pemantauan masa henti obat (withdrawal period), dan mengunduh laporan PDF performa keuangan bankable untuk KUR.
+Angonku adalah platform manajemen poultry digital modern yang dirancang untuk membantu peternak ayam broiler memantau siklus hidup, mengoptimalkan pakan, menjaga keamanan pangan lewat pemantauan masa henti obat (withdrawal period), dan mengunduh laporan PDF performa keuangan bankable untuk KUR.
 
 ---
 
@@ -36,7 +36,7 @@ TernaKuy (sebelumnya PiboFarm) adalah platform manajemen poultry digital modern 
 ### 1. Klon Repositori dan Masuk ke Direktori
 ```bash
 git clone <repository_url>
-cd TernaKuy
+cd Angonku
 ```
 
 ### 2. Install Dependensi PHP & Javascript
